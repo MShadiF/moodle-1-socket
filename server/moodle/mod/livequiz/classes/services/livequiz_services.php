@@ -28,7 +28,6 @@ use dml_exception;
 use dml_transaction_exception;
 
 use mod_livequiz\models\answer;
-use mod_livequiz\services\i_livequiz_services;
 use mod_livequiz\models\livequiz;
 use mod_livequiz\models\question;
 use mod_livequiz\models\questions_answers_relation;
@@ -43,7 +42,7 @@ use mod_livequiz\models\quiz_questions_relation;
  * @copyright 2024 Software AAU
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class livequiz_services implements i_livequiz_services {
+class livequiz_services {
     /**
      * @var livequiz_services|null $instance
      */
@@ -191,6 +190,4 @@ class livequiz_services implements i_livequiz_services {
         }
         return $questions;
     }
-
-    
 }
