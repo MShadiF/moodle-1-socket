@@ -61,6 +61,11 @@ class question {
     private array $answers = [];
 
     /**
+     * @var array $imagenames A list of image names associated with the question.
+     */
+    private array $imagenames = [];
+
+    /**
      * Constructor for the question class.
      *
      * @param string $title
@@ -189,6 +194,26 @@ class question {
      */
     public function add_answer(answer $answer): void {
         $this->answers[] = $answer;
+    }
+
+    /**
+     * Gets the image names associated with the question.
+     *
+     * @return array The list of image names.
+     */
+    public function add_images(array $images): void {
+        foreach ($images as $image) {
+            $this->add_image($image);
+        }
+    }
+
+    /**
+     * Appends an image to the question object.
+     *
+     * @param answer $image The title of the question.
+     */
+    public function add_image(answer $image): void {
+        $this->imagenames[] = $image;
     }
 
     /**

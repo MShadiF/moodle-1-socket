@@ -26,6 +26,7 @@ require_once(__DIR__ . '/../models/quiz_questions_relation.php');
 
 use dml_exception;
 use dml_transaction_exception;
+use file_exception;
 
 use mod_livequiz\models\answer;
 use mod_livequiz\models\livequiz;
@@ -92,7 +93,7 @@ class livequiz_services {
      *
      * @throws dml_exception
      */
-    public function submit_quiz(livequiz $livequiz): livequiz {
+    public function submit_quiz(livequiz $livequiz, $contextid): livequiz {
         $questions = $livequiz->get_questions();
 
         if (!count($questions)) {
@@ -165,5 +166,30 @@ class livequiz_services {
             $question->add_answers($answers);
         }
         return $questions;
+    }
+
+    /**
+     * Saves an entity image to the database. This is used to save images to questions or answers.
+     *
+     * @param int $entityid // The id of the entity to which the image is associated.
+     * @param string $filename
+     * @param $context
+     * @throws file_exception
+     */
+    private function save_image(int $entityid, string $filename, $context): void {
+        $file_record = array(
+            'contextid' => $context->id,
+            'component' => 'mod_livequiz',
+            'filearea' => 'quiz_content',
+            'itemid' => $entityid,
+            'filepath' => '/',
+            'filename' => $filename
+        );
+        $fs = get_file_storage();
+        $existing_file = $fs->get_file($context->id, 'mod_livequiz', 'quiz_content', $entityid, '/', $filename);
+        if ($existing_file) {
+            $existing_file->delete();
+        }
+        $fs->create_file_from_pathname($file_record, $filename);
     }
 }

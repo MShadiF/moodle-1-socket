@@ -34,11 +34,56 @@ $instance = $DB->get_record('livequiz', ['id' => $cm->instance], '*', MUST_EXIST
 require_login($course, true, $cm); // Ensure the user is logged in and can access this module.
 $context = context_module::instance($cm->id); // Set the context for the course module.
 $PAGE->set_context($context); // Make sure to set the page context.
-
+try {
+    require_capability('moodle/course:manageactivities', $context);
+} catch (Exception $e) {
+    echo 'Permission error: ' . $e->getMessage();
+    die();
+}
 $PAGE->set_url('/mod/livequiz/view.php', ['id' => $id]);
 $PAGE->set_title(get_string('modulename', 'mod_livequiz'));
 $PAGE->set_heading(get_string('modulename', 'mod_livequiz'));
 
 echo $OUTPUT->header();
+echo $context->id;
 echo $OUTPUT->heading('This is the livequiz view page');
+echo $cm->id;
+
+// Check if the form was submitted.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['userfile'])) {
+    $itemid = required_param('itemid', PARAM_INT); // Replace or modify as needed.
+    $fs = get_file_storage();
+
+    // Set up file record details.
+    $file_record = array(
+        'contextid' => $context->id,
+        'component' => 'mod_yourplugin', // Replace with your plugin's component name.
+        'filearea' => 'uploaded_files',  // Replace with your file area.
+        'itemid' => $itemid,             // Set this to your specific item ID (e.g., a record ID).
+        'filepath' => '/',               // Root directory for files.
+        'filename' => $_FILES['userfile']['name'] // Use the uploaded file's name.
+    );
+
+    // Check if the file already exists and delete if necessary (optional).
+    $existing_file = $fs->get_file($context->id, 'mod_livequiz', 'uploaded_files', $itemid, '/', $_FILES['userfile']['name']);
+    if ($existing_file) {
+        $existing_file->delete();
+    }
+
+    // Create the file from the temporary upload location.
+    $stored_file = $fs->create_file_from_pathname($file_record, $_FILES['userfile']['tmp_name']);
+    if ($stored_file) {
+        echo '<p>File uploaded successfully.</p>';
+    } else {
+        echo '<p>Failed to upload the file.</p>';
+    }
+}
+
+// Display the upload form.
+echo '<form enctype="multipart/form-data" method="post">';
+echo '<input type="hidden" name="itemid" value="42">'; // Replace or modify as needed.
+echo '<input type="file" name="userfile">';
+echo '<input type="submit" value="Upload File">';
+echo '</form>';
+
 echo $OUTPUT->footer();
