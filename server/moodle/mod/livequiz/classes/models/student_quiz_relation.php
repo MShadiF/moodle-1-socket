@@ -27,10 +27,10 @@ use dml_transaction_exception;
  */
 class student_quiz_relation {
     /**
-     * Append a student to a quiz, given both their ids.
+     * Append a student-quiz relation given both their ids.
      *
      * @param int $questionid
-     * @param int $answerid
+     * @param int $studentid
      * @return void
      * @throws dml_exception
      * @throws dml_transaction_exception
