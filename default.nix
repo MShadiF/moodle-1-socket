@@ -216,10 +216,16 @@ EOF
       PHP_SERVER_PID=$!
     }
 
+    start_websocket() {
+      echo "Starting WebSocket for livequiz"
+      php ./server/moodle/mod/livequiz/classes/websocket/start_websocket.php
+      WEBSOCKET_PID=$!
+    }
+
     # Function to stop services
     stop_services() {
       echo "Stopping services..."
-      kill -9 $MARIADB_PID $ADMINER_PID $PHP_SERVER_PID $SELENIUM_PID 2>/dev/null
+      kill -9 $MARIADB_PID $ADMINER_PID $PHP_SERVER_PID $WEBSOCKET_PID $SELENIUM_PID 2>/dev/null
       rm -f ${mariadb_socket}
       rm -f ./adminer_router.php
     }
@@ -373,7 +379,7 @@ EOF
     start_mariadb
     start_adminer
     start_php_server
-
+    start_websocket
 
 
 
